@@ -1,0 +1,321 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Market Basket</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/css/semantic.min.css">
+    <link rel="stylesheet" href="/css/formValidation.min.css">
+    <link rel="stylesheet" href="/css/calendar.min.css">
+    <link rel="stylesheet" href="/css/style.css">
+    <link rel="stylesheet" href="/css/datatables.min.css">
+
+    <script src="/js/jquery.min.js"></script>
+    <script src="/js/dataTables.js"></script>
+    <!-- <link href="https://cdn.datatables.net/v/se/dt-2.1.5/datatables.min.css" rel="stylesheet">
+    <script src="https://cdn.datatables.net/v/se/dt-2.1.5/datatables.min.js"></script> -->
+    <script src="/js/formValidation.js"></script>
+    <script src="/js/semantic.js"></script>
+    <script src="/js/semantic.min.js"></script>
+
+    <script src="/js/sweetalert.min.js"></script>
+    <script src="/js/calendar.min.js"></script>
+    <script src="/js/script.js"></script>
+    <script src="/js/angular.min.js"></script>
+    
+
+    <!-- <script src="https://code.angularjs.org/1.3.0/angular.js"></script> -->
+    <!--https://jsbin.com/ruqakehefa/1/edit?html,js,output-->
+</head>
+
+<body ng-app="app" ng-controller="controller">
+    
+    <!-- sidebar -->
+    <div class="ui sidebar inverted vertical menu sidebar-menu" id="sidebar">
+        <div class="item">
+            <div class="header">General</div>
+            <div class="menu">
+                <a class="item">
+                    <div>
+                        <i class="bx bxs-dashboard icon"></i>
+                        Dashboard
+                    </div>
+                </a>
+            </div>
+        </div>
+        <div class="item">
+            <div class="header">
+                Administration
+            </div>
+            <div class="menu">
+                <a class="item">
+                    <div><i class="bx bx-cog icon"></i>Settings</div>
+                </a>
+                <a class="item">
+                    <div><i class="bx bx-user icon"></i>Profile</div>
+                </a>
+            </div>
+        </div>
+    
+        <a href="#" class="item">
+            <div>
+                <i class="bx bx-card icon"></i>
+                Sales
+            </div>
+        </a>
+    </div>
+    <!-- sidebar -->
+
+    <!-- top nav -->
+    <nav class="ui top fixed inverted menu">
+        <div class="left menu">
+            <a href="#" class="sidebar-menu-toggler item" data-target="#sidebar">
+                <i class='bx bx-dots-vertical-rounded'></i>
+            </a>
+            <a href="#" class="header item">
+                Dashboard
+            </a>
+        </div>
+        <div class="right menu">
+            <div class="ui dropdown item">
+                <i class='bx bx-user'></i>
+                <div class="menu">
+                    <a href="#" class="item">
+                        <i class='bx bxs-user-detail'></i> Profile</a>
+                    <a href="#" class="item">
+                        <i class='bx bx-cog'></i>
+                        Settings</a>
+                    <a href="#" class="item">
+                        <i class='bx bx-log-out'></i>
+                        Logout
+                    </a>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- top nav -->
+    <div class="pusher">
+        <div class="main-content">
+            <div class="ui grid stackable padded">
+                <div class=" five wide computer eight wide tablet sixteen wide mobile column">
+                    <div class="ui fluid card">
+                        <div class="content">
+                            <div class="ui right floated header green">
+                                <i class='bx bx-notepad'></i>
+                            </div>
+                            <div class="header">
+                                <div class="ui header green">Time</div>
+                            </div>
+                            <div class="meta">
+                                Add time
+                            </div>
+                            <div class="description">
+                                <form class="ui form">
+                                    <div class="ui field">
+                                        <label>Period</label>
+                                        
+                                        <select class="ui dropdown" ng-model="rlinp.by" ng-options="option.value as option.name for option in list_period" ng-change="loadCalender()">
+                                        </select>
+                                    </div>
+                                    <div class="two fields">
+                                        <div class="field">
+                                            <label>From {{ rlinp.by }}</label>
+                                            <div class="ui calendar" id="rangestart">
+                                                <div class="ui input left icon">
+                                                <i class='icon bx bx-calendar'></i>
+                                                    <input ng-model="rlinp.from" name="from" type="text" autocomplete="off" placeholder="Start">
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="field">
+                                            <label>To {{ rlinp.by }}</label>
+                                            <div class="ui calendar" id="rangeend">
+                                                <div class="ui input left icon">
+                                                    <i class='icon bx bx-calendar'></i>
+                                                    <input ng-model="rlinp.to" name="to" type="text" autocomplete="off" placeholder="End">
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="ui two buttons">
+                                        <button ng-click="getRules()" class="ui green button">Get Rules</button>
+                                    </div>
+                                </form>
+                            </div>
+                        </div>
+                        
+                    </div>
+                </div>
+
+            </div>
+            <div class="ui grid stackable padded">
+                <div class="ui fluid card column">
+                    <table class="ui celled striped table dataTable" id="example">
+                        <thead>
+                            <tr>
+                                <th ng-sortable>
+                                    Support
+                                </th>
+                                <th ng-sortable>
+                                    Item sets
+                                </th>
+                                
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr ng-repeat="row in list_items">
+                                <td class="collapsing">
+                                    {{ row.support }}
+                                </td>
+                                <td>
+                                    {{ row.items }}
+                                     
+                                </td>
+                            </tr>
+                            
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+</body>
+
+<script>
+
+
+    var app = angular.module("app", []);
+    app.controller("controller", function ($scope, $http) {
+
+        $scope.list_period = [
+            {
+                name: "Day",
+                value: "date"
+            },
+            {
+                name: "Month",
+                value: "month"
+            },
+            {
+                name:"Year",
+                value:"year"
+            }
+        ]
+        $scope.rlinp ={by: "date",from:"",to:""};
+
+        $scope.getRules = ()=>{
+            //console.log($scope.rlinp);
+            $http({
+                method: "POST",
+                url: "/api/v1/sales",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                data: $scope.rlinp
+            }).then(function (e) {
+                if(e.data.status==1)
+                {
+                    $scope.list_items = e.data.data.itemsets;
+                    $scope.loadTable();
+                } else {
+                    swal("Error!", "No data found!", "error");
+                }
+            });
+        }
+        $scope.loadTable = ()=> {
+
+            angular.element(document).ready(()=>{
+                $("#example").DataTable({
+                    retrieve: true
+                });
+            });
+
+        }
+        $scope.loadCalender = ()=>{
+            setTimeout(
+                ()=>{
+                    
+                    $('#rangestart').calendar({
+                        type: $scope.rlinp.by,
+                        formatter: {
+                            date: function (date, settings) {
+                                if (!date) return '';
+                                var day = date.getDate() + '';
+                                if (day.length < 2) {
+                                    day = day;
+                                }
+                                var month = (date.getMonth() + 1) + '';
+                                if (month.length < 2) {
+                                    month = month;
+                                }
+                                var year = date.getFullYear();
+                                if ($scope.rlinp.by == "date") {
+                                    $scope.rlinp.from = year + '-' + month + '-' + day;
+                                    return year + '-' + month + '-' + day;
+                                }
+                                if ($scope.rlinp.by == "month") {
+                                    $scope.rlinp.from = month;
+                                    return month;
+                                }
+                                if ($scope.rlinp.by == "year") {
+                                    $scope.rlinp.from = year;
+                                    return year;
+                                }
+                            }
+                        },
+                        className: {
+                            prevIcon: 'bx bx-chevron-left icon',
+                            nextIcon: 'bx bx-chevron-right icon'
+                        },
+                        endCalendar: $('#rangeend')
+                    });
+                    $('#rangeend').calendar({
+                        type: $scope.rlinp.by,
+                        formatter: {
+                            date: function (date, settings) {
+                                if (!date) return '';
+                                var day = date.getDate() + '';
+                                if (day.length < 2) {
+                                    day = day;
+                                }
+                                var month = (date.getMonth() + 1) + '';
+                                if (month.length < 2) {
+                                    month = month;
+                                }
+                                var year = date.getFullYear();
+                                if($scope.rlinp.by=="date")
+                                {
+                                    $scope.rlinp.to = year + '-' + month + '-' + day;
+                                    return year + '-' + month + '-' + day;
+                                }
+                                if ($scope.rlinp.by == "month") {
+                                    $scope.rlinp.to = month;
+                                    return month;
+                                }
+                                if ($scope.rlinp.by == "year") {
+                                    $scope.rlinp.to=year;
+                                    return year;
+                                }
+                                
+                                
+                            }
+                        },
+                        className: {
+                            prevIcon: 'bx bx-chevron-left icon',
+                            nextIcon: 'bx bx-chevron-right icon'
+                        },
+                        startCalendar: $('#rangestart')
+                    });
+                },
+                1000
+            );
+        }
+        
+        $scope.loadCalender();
+    });
+    
+</script>
+</html>

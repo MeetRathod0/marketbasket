@@ -1,0 +1,166 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+    <title>Market Basket</title>
+    <meta http-equiv="X-UA-Compatible" content="IE=7">
+    <link href='https://unpkg.com/boxicons@2.1.4/css/boxicons.min.css' rel='stylesheet'>
+    <link rel="stylesheet" href="/css/semantic.min.css">
+    <link rel="stylesheet" href="/css/formValidation.min.css">
+
+    <script src="https://code.jquery.com/jquery-3.4.1.min.js"></script>
+    <script src="/js/semantic.min.js"></script>
+    <script src="/js/formValidation.js"></script>
+    <script src="/js/semantic.js"></script>
+    <script src="/js/sweetalert.min.js"></script>
+    <script src="/js/angular.min.js"></script>
+    <style>
+        body>.grid {
+            height: 100%;
+        }
+
+        .column {
+            max-width: 360px;
+        }
+    </style>
+
+</head>
+
+<body ng-app="app" style="background-color: #dadada;" ng-controller="controller">
+    <div class="ui middle aligned center aligned grid">
+        <div class="column">
+            <div class="ui form" id="form1">
+                <div class="ui segment">
+                    <h1><i class="bx bx-cog"></i></h1>
+                    <h2></h2>
+                    <div class="ui center aligned basic segment">
+                        <form class="ui form" id="form">
+                            <div class="field">
+                                <label for="">Enter your  registered email</label>
+                                <input type="text" name="email" ng-model="lg.email" placeholder="Email adress">
+                            </div>
+                            <button class="ui primary fluid button" id="btnNext" type="submit">Verify</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+            <div class="ui form" id="form2">
+                <div class="ui segment">
+                    <h1><i class="bx bx-cog"></i></h1>
+                    <h2></h2>
+                    <div class="ui center aligned basic segment">
+                        <form class="ui form" id="form">
+                            <div class="field">
+                                <label for="">OTP is sent to {{ lg.email }} </label>
+                                <input type="text" ng-model="otp" name="otp" placeholder="Enter OTP">
+                            </div>
+                            <button class="ui primary fluid button" id="submit" ng-click="verifyOTP()" type="submit">Verify</button>
+                        </form>
+                        <div class="ui divider"></div>
+                        <button class="circular ui blue icon button" id="btnPrev">
+                            <i class="bx bx-chevron-left icon"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    
+</body>
+<script>
+    $(document).ready(()=>{
+        $("#form2").hide();
+        $("#btnPrev").click(()=>{
+            $("#form1").show();
+            $("#form2").hide();
+        });
+        
+    });
+
+    var app = angular.module('app', []).controller('controller', function ($scope, $http, $location) {
+        $("#error").hide();
+        // save to db
+        $scope.verify = () => {
+            $http({
+                method: "POST",
+                url: "/api/v1/auth/verifyEmail",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                data: $scope.lg
+            }).then(function (e) {
+                setTimeout(()=>{
+                    $("#form1").hide();
+                    $("#form2").show();
+                });
+            }, function (e) {
+                swal("Error!", e.data.message, "error");
+            });
+        }
+
+        $scope.verifyOTP = ()=>{
+            $http({
+                method: "POST",
+                url: "/api/v1/auth/verifyOTP",
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                data: { email:$scope.lg.email, otp:$scope.otp }
+            }).then(function (e) {
+                console.log(e);
+            }, function (e) {
+                //console.log(e);
+                swal("Error!", e.data.message, "error");
+            });
+        }
+
+        setTimeout(() => {
+            console.log("done");
+            $('#form').formValidation({
+                framework: 'semantic',
+                icon: {
+                    valid: 'bx bx-check icon green',
+                    invalid: 'bx bx-x icon',
+                    validating: 'refresh icon',
+                    feedback: 'fv-control-feedback'
+                },
+                event: {
+                    title: 'keyup',
+                    summary: 'blur',
+                },
+                fields: {
+
+                    password: {
+                        message: 'Password is required',
+                        validators: {
+                            notEmpty: {
+                                message: "Password is required!"
+                            }
+
+                        }
+                    },
+                    email: {
+                        message: 'Email is required',
+                        validators: {
+                            notEmpty: {
+                                message: "Email is required!"
+                            },
+                            emailAddress: {
+                                message: 'The input is not a valid email address'
+                            }
+                        }
+                    },
+
+                }
+            }).on('success.form.fv', function (e) {
+                e.preventDefault();
+                $scope.verify();
+            });
+        }, 0);
+
+
+    });
+</script>
+
+</html>
